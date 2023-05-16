@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
-  name: generic-application
+  name: simple-application
   labels:
-    app: generic-application
+    app: simple-application
     tier: worker
 spec:
   # modify replicas according to your case
@@ -17,5 +17,5 @@ spec:
         tier: worker
     spec:
       containers:
-        - name: generic-application
-          image: generic-application:0.0.1
+        - name: simple-application
+          image: simple-application-logging:0.0.1
