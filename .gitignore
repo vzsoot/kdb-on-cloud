@@ -2,4 +2,4 @@
 .kdbinb
 *.iml
 **/*/kc.lic
-/generic-application/.build/
+/simple-application/.build/

@@ -1,10 +1,9 @@
 #!/bin/bash
 
-export BUILD=./generic-application/.build
+export BUILD=./simple-application/.build
 
-mkdir -p $BUILD/q
-cp -a ~/q/l64 $BUILD/q/l64
-cp ~/q/q.k $BUILD/q/
+rm -rf $BUILD; mkdir -p $BUILD
+cp -a ~/q $BUILD/q
 cp ~/q/lic/kc.lic $BUILD/
 
-docker build -f generic-application/Dockerfile generic-application/. -t generic-application --build-arg BUILD_DIR=".build"
+docker build -f "$1" simple-application/. -t "$2" --build-arg BUILD_DIR=".build"
