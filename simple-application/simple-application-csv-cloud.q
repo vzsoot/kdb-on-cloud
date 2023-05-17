@@ -13,7 +13,7 @@ workloadFn: {
     opts: ``headers!(::;headers);
     opts[`headers]: ("x-ms-version";"x-ms-blob-type";"Content-Type")!("2017-11-09";"BlockBlob";"text/csv");
     opts[`body]: "\n" sv .h.cd finTransform;
-    resp:.kurl.sync ("https://", (getenv[`$"AZURE_STORAGE_ACCOUNT"]), ".blob.core.windows.net/sample-data/outgoing/result-", string[.z.p]; `PUT; opts);
+    resp:.kurl.sync ("https://", (getenv[`$"AZURE_STORAGE_ACCOUNT"]), ".blob.core.windows.net/sample-data/outgoing/result_", ssr[string[.z.p]; "[.:]"; ""], ".csv"; `PUT; opts);
 
     INFO string[resp]
  }
