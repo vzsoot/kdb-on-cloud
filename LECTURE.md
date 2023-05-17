@@ -2,11 +2,13 @@
 
 ## Create a simple application
 ### Application logging in every two seconds
-[simple-application-logging.q](simple-application/simple-application-logging.q)
+Using logging library from https://github.com/prodrive11/log4q 
+
+Code: [simple-application-logging.q](simple-application/simple-application-logging.q)
 ```bash
 q ./simple-application-logging.q -q
 ```
-## Containerize the application
+## Containerize the application ([official docs](https://code.kx.com/insights/1.5/core/install.html#run-in-docker))
 ### Create an "empty" image
 Dockerfile with minimal content: [sleep.Dockerfile](simple-application/sleep.Dockerfile)
 
@@ -100,6 +102,8 @@ docker container stop simple-application-csv-filesystem-{1..3}
 ```
 
 ## Deploy to Kubernetes (Kind)
+Using [k9s](https://k9scli.io/topics/install/) to navigate K8S
+
 Tag our image with a version
 ```bash
 docker tag simple-application-logging:latest simple-application-logging:0.0.1
@@ -125,7 +129,7 @@ kubectl -n simple-application scale replicaset/simple-application --replicas=10
 ```
 
 ## Deploy to AKS (Azure Kubernetes Services)
-### Introduce Cloud storage
+### Introduce Cloud storage ([official docs](https://code.kx.com/insights/1.5/core/objstor/main.html))
 Create simple application with cloud storage access [simple-application-csv-cloud.q](simple-application/simple-application-csv-cloud.q)
 
 Let's build it
