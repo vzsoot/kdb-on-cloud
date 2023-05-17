@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: simple-application
+  labels:
+    app: simple-application
+    tier: worker
+spec:
+  # modify replicas according to your case
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: worker
+  template:
+    metadata:
+      labels:
+        tier: worker
+    spec:
+      containers:
+        - name: simple-application
+          image: kdboncloudz676ur3b7pqxo.azurecr.io/simple-application-csv-cloud:0.0.1
+          env:
+          - name: AZURE_STORAGE_ACCOUNT
+            valueFrom:
+              secretKeyRef:
+                name: storage-account
+                key: storage-account
+          - name: AZURE_STORAGE_SHARED_KEY
+            valueFrom:
+              secretKeyRef:
+                name: storage-key
+                key: storage-key

@@ -124,6 +124,46 @@ kubectl -n simple-application scale replicaset/simple-application --replicas=10
 
 ## Deploy to AKS (Azure Kubernetes Services)
 ### Introduce Cloud storage
-### Secrets are important
-### Reuse previous deployment
+Create sample application with cloud storage access [simple-application-csv-cloud.q](simple-application/simple-application-csv-cloud.q)
+
+Let's build it
+```bash
+./build.sh simple-application/simple-application-csv-cloud.Dockerfile simple-application-csv-cloud
+```
+
+Run it in docker to test with secrets
+```bash
+docker run -d --name simple-application-csv-cloud-container -e AZURE_STORAGE_ACCOUNT="???" -e AZURE_STORAGE_SHARED_KEY="???" simple-application-csv-cloud
+```
+
+### Share the image with Azure (ACR - Azure Container Registry)
+Login to the registry with docker
+```bash
+docker login <registry server host>
+```
+
+Tag the image for the registry host
+```bash
+docker tag simple-application-csv-cloud:latest <registry server host>/simple-application-csv-cloud:0.0.1
+```
+
+Push the image to the registry
+```bash
+docker push simple-application-csv-cloud:latest <registry server host>/simple-application-csv-cloud:0.0.1
+```
+
+### Reuse previous deployment with secrets
+Slightly modified deployment for AKS [simple-application-replicaset-aks.yaml](deploy/k8s/simple-application-replicaset-aks.yaml)
+
+Deploy the definition
+```bash
+kubectl apply -f deploy/k8s/simple-application-replicaset-aks.yaml -n simple-application
+```
+
 ### Scale up workers
+
+Scale up to something big
+
+```bash
+kubectl -n simple-application scale replicaset/simple-application --replicas=500
+```
