@@ -38,7 +38,9 @@ Execute bash inside the container
 docker exec -it simple-application-sleep-container /bin/bash
 ```
 
-Investigate processes, kernel version inside and outside the cluster.
+Check running processes, the kernel version inside and outside the container.
+
+Could we install something?
 
 ### Include Q and the application
 Build script to prepare and run the build: [build.sh](build.sh)
@@ -59,7 +61,7 @@ Follow the logs
 watch docker logs simple-application-logging-container
 ```
 
-## Generic application doing CSV transformations
+## Simple application doing CSV transformations
 ### Use folders to input, transform then output the result
 Run [simple-application-csv-filesystem.q](simple-application/simple-application-csv-filesystem.q)
 
@@ -94,7 +96,7 @@ docker container ls -a
 
 Stop them all
 ```bash
-docker container stop simple-application-csv-filesystem-{1..2}
+docker container stop simple-application-csv-filesystem-{1..3}
 ```
 
 ## Deploy to Kubernetes (Kind)
@@ -124,7 +126,7 @@ kubectl -n simple-application scale replicaset/simple-application --replicas=10
 
 ## Deploy to AKS (Azure Kubernetes Services)
 ### Introduce Cloud storage
-Create sample application with cloud storage access [simple-application-csv-cloud.q](simple-application/simple-application-csv-cloud.q)
+Create simple application with cloud storage access [simple-application-csv-cloud.q](simple-application/simple-application-csv-cloud.q)
 
 Let's build it
 ```bash
