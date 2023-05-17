@@ -14,7 +14,7 @@ Dockerfile with minimal content: [sleep.Dockerfile](simple-application/sleep.Doc
 
 Build and tag image
 ```bash
-docker build -f Dockerfile.sleep -t simple-application-sleep .
+docker build -f sleep.Dockerfile -t simple-application-sleep .
 ```
 
 List images
