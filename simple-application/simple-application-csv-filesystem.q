@@ -16,7 +16,7 @@ workloadFn: {
 
     finData: ("SMFSS***";enlist",") 0:`$inputDir, "/done_", fileName;
 
-    finTransform: select year_value: avg Data_value by `year$Period from finData;
+    finTransform: select year_value: avg Data_value by `year$Period, Series_reference from finData;
 
     resultFile: outputDir, "/result-", string[.z.p], ".csv";
     (`$resultFile) 0: csv 0: finTransform;

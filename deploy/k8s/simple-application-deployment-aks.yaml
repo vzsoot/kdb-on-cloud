@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: ReplicaSet
+kind: Deployment
 metadata:
   name: simple-application
   labels:
@@ -16,9 +16,11 @@ spec:
       labels:
         tier: worker
     spec:
+      imagePullSecrets:
+        - name: image-pull-secret
       containers:
         - name: simple-application
-          image: kdboncloudz676ur3b7pqxo.azurecr.io/simple-application-csv-cloud:0.0.1
+          image: bmekdboncloud.azurecr.io/simple-application-csv-cloud:0.0.1
           env:
           - name: AZURE_STORAGE_ACCOUNT
             valueFrom:

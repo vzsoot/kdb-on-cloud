@@ -6,7 +6,7 @@ ARG BUILD_DIR
 WORKDIR /app
 
 COPY $BUILD_DIR/q q
-COPY $BUILD_DIR/kc.lic kc.lic
+COPY $BUILD_DIR/k4.lic k4.lic
 
 ENV PATH $PATH:/app/q/l64
 ENV QHOME /app/q

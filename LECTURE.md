@@ -19,7 +19,7 @@ docker build -f sleep.Dockerfile -t simple-application-sleep .
 
 List images
 ```bash
-docker image ls -a
+docker image ls -a | grep simple
 ```
 
 ### Run image as a container
@@ -30,7 +30,7 @@ docker run -d --name simple-application-sleep-container simple-application-sleep
 
 List running containers
 ```bash
-docker container ls -a
+docker container ls -a | grep simple
 ```
 
 ### Exec into the container
@@ -68,7 +68,7 @@ watch docker logs simple-application-logging-container
 Run [simple-application-csv-filesystem.q](simple-application/simple-application-csv-filesystem.q)
 
 ```bash
-q ./simple-application-csv-filesystem.q -q -inputDir input -outputDir output
+q ./simple-application-csv-filesystem.q -q -inputDir ../data/input -outputDir ../data/output
 ```
 
 ### Migrate into the container
@@ -82,18 +82,23 @@ Let's build it
 ### Start using mounts
 Run container with mounts
 ```bash
-docker run -d --name simple-application-csv-filesystem-1 -v $(pwd)/input:/input -v $(pwd)/output:/output simple-application-csv-filesystem
+docker run -d --name simple-application-csv-filesystem-1 -v $(pwd)/data/input:/input -v $(pwd)/data/output:/output simple-application-csv-filesystem
 ```
 
 ### Create more instances
 ```bash
-docker run -d --name simple-application-csv-filesystem-2 -v $(pwd)/input:/input -v $(pwd)/output:/output simple-application-csv-filesystem
-docker run -d --name simple-application-csv-filesystem-3 -v $(pwd)/input:/input -v $(pwd)/output:/output simple-application-csv-filesystem
+docker run -d --name simple-application-csv-filesystem-2 -v $(pwd)/data/input:/input -v $(pwd)/data/output:/output simple-application-csv-filesystem
+docker run -d --name simple-application-csv-filesystem-3 -v $(pwd)/data/input:/input -v $(pwd)/data/output:/output simple-application-csv-filesystem
 ```
 
 List them
 ```bash
 docker container ls -a
+```
+
+Watch all the logs
+```bash
+watch 'docker ps -q | xargs -L 1 docker logs --tail=10'
 ```
 
 Stop them all
@@ -110,11 +115,12 @@ docker tag simple-application-logging:latest simple-application-logging:0.0.1
 ```
 
 ### Pods and Deployments
-Deployment definition [simple-application-replicaset.yaml](deploy/k8s/simple-application-replicaset.yaml)
+Deployment definition [simple-application-deployment.yaml](deploy/k8s/simple-application-deployment.yaml)
 
-Deploy the ReplicaSet
+Apply the deployment
 ```bash
-kubectl apply -n simple-application -f deploy/k8s/simple-application-replicaset.yaml
+kubectl create namespace simple-application 
+kubectl apply -n simple-application -f deploy/k8s/simple-application-deployment.yaml
 ```
 
 Give the image to Kind
@@ -125,7 +131,7 @@ kind load docker-image simple-application-logging:0.0.1
 ### Scale up/down workers
 Scale the number of workers to 10
 ```bash
-kubectl -n simple-application scale replicaset/simple-application --replicas=10
+kubectl -n simple-application scale deployment/simple-application --replicas=10
 ```
 
 ## Deploy to AKS (Azure Kubernetes Services)
@@ -159,11 +165,11 @@ docker push simple-application-csv-cloud:latest <registry server host>/simple-ap
 ```
 
 ### Reuse previous deployment with secrets
-Slightly modified deployment for AKS [simple-application-replicaset-aks.yaml](deploy/k8s/simple-application-replicaset-aks.yaml)
+Slightly modified deployment for AKS [simple-application-deployment-aks.yaml](deploy/k8s/simple-application-deployment-aks.yaml)
 
 Deploy the definition
 ```bash
-kubectl apply -f deploy/k8s/simple-application-replicaset-aks.yaml -n simple-application
+kubectl apply -f deploy/k8s/simple-application-deployment-aks.yaml -n simple-application
 ```
 
 ### Scale up workers
@@ -171,5 +177,5 @@ kubectl apply -f deploy/k8s/simple-application-replicaset-aks.yaml -n simple-app
 Scale up to something big
 
 ```bash
-kubectl -n simple-application scale replicaset/simple-application --replicas=500
+kubectl -n simple-application scale deployment/simple-application --replicas=500
 ```
