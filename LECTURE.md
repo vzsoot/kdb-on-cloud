@@ -179,3 +179,81 @@ Scale up to something big
 ```bash
 kubectl -n simple-application scale deployment/simple-application --replicas=500
 ```
+
+## Controller-Worker application
+Create a **controller** application with a task queue and task handling API [controller.q](controller-worker-application/controller.q)
+
+Create a **worker** application that connects to the controller and executes the next task in the task [worker.q](controller-worker-application/worker.q)
+
+### Run the agents locally
+
+Start the **Controller**
+```bash
+q ./controller.q -p 5000 -q
+```
+
+Start the **Worker** providing the controller address and ID 
+```bash
+q ./worker.q -q -controllerAddr ":5000" -workerId "localWorker"
+```
+
+### Containerize agents
+
+Run build command
+```bash
+./build-controller-worker-application.sh controller-worker-application/worker.Dockerfile application-worker
+./build-controller-worker-application.sh controller-worker-application/controller.Dockerfile application-controller
+```
+
+### Run from docker
+
+Start up the **Controller** and publish the port
+
+```bash
+docker run -d --name application-controller -p 5000:5000 -e CONTROLLER_PORT=5000 application-controller
+```
+
+Watch the **Controller** logs:
+```bash
+watch docker logs application-controller
+```
+
+Start up two **Workers**
+```bash
+docker run -d --name application-worker-1 -e CONTROLLER_ADDR=192.168.16.1:5000 -e WORKER_ID=dockerWorker1 application-worker
+docker run -d --name application-worker-2 -e CONTROLLER_ADDR=192.168.16.1:5000 -e WORKER_ID=dockerWorker2 application-worker
+```
+
+Add sample tasks to the **Controller**
+```text
+// sample tasks with priorities
+addTask[({INFO "add1"; :x+y}; 1;1); 17]
+addTask[({INFO "add2"; :x+y}; 2;2); 7]
+addTask[({INFO "add3"; :x+y}; 3;3); 9]
+addTask[({INFO "add4"; :x+y}; 4;4); 9]
+addTask[({INFO "add5"; :x+y}; 5;5); 1]
+```
+
+## Deploy Controller-Worker application to AKS
+
+Prepare images and share with the remote registry
+```bash
+docker tag application-controller:latest bmekdboncloud.azurecr.io/application-controller:0.0.1
+docker tag application-worker:latest bmekdboncloud.azurecr.io/application-worker:0.0.1
+docker push bmekdboncloud.azurecr.io/application-controller:0.0.1
+docker push bmekdboncloud.azurecr.io/application-worker:0.0.1
+```
+
+Create **Controller** service by defining a domain and a load balancer for the **Controller** deployment
+```bash
+kubectl apply -f deploy/k8s/application-controller-service.yaml -n simple-application
+```
+
+Create a **Controller** and a **Worker** deployment
+
+```bash
+kubectl apply -f deploy/k8s/application-controller-deployment-aks.yaml -n simple-application
+kubectl apply -f deploy/k8s/application-worker-deployment-aks.yaml -n simple-application
+```
+
+## Let's do some large data analysis

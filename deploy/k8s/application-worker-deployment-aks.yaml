@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: application-worker
+  labels:
+    app: application-worker
+    tier: worker
+spec:
+  # modify replicas according to your case
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: worker
+  template:
+    metadata:
+      labels:
+        pod: application-worker
+        tier: worker
+    spec:
+      imagePullSecrets:
+        - name: image-pull-secret
+      containers:
+        - name: simple-application
+          image: bmekdboncloud.azurecr.io/application-worker:0.0.1
+          env:
+          - name: CONTROLLER_ADDR
+            value: "application-controller:9050"
+          - name: WORKER_ID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: AZURE_STORAGE_ACCOUNT
+            valueFrom:
+              secretKeyRef:
+                name: storage-account
+                key: storage-account
+          - name: AZURE_STORAGE_SHARED_KEY
+            valueFrom:
+              secretKeyRef:
+                name: storage-key
+                key: storage-key
